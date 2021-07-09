@@ -1,5 +1,5 @@
 import pytest
-from vendia_utils import blocks
+from vendia import blocks
 
 sample_mutations = [
         """

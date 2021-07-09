@@ -6,3 +6,4 @@ build/
 .venv
 Pipfile.lock
 htmlcov
+*.pyc

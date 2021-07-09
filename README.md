@@ -1,6 +1,10 @@
-# vendia-utils
+# Vendia Python Tools
 
-This package has utilities that are useful when interacting with [Vendia Universal Application (Uni)](https://www.vendia.net/docs/share/dev-and-use-unis) data.
+>This package has python utilities that are useful when interacting with [Vendia Universal Application (Uni)](https://www.vendia.net/docs/share/dev-and-use-unis) data.
+
+[![PyPI Version][pypi-image]][pypi-url]
+[![Build Status][build-image]][build-url]
+[![Code Coverage][coverage-image]][coverage-url]
 
 ## Blocks
 
@@ -32,3 +36,9 @@ A new block notification is emitted when data in a node has changed.  Data could
 
 The block report includes information about the block, including the **BlockId**, **BlockHash**, ****, but it does not include the full list of mutations that were included in the block transaction list.  Users must query the Uni to get this information.
 
+[pypi-image]: https://img.shields.io/pypi/v/vendia-python-tools
+[pypi-url]: https://pypi.org/project/vendia-python-tools/
+[build-image]: https://github.com/vendia/vendia-python-tools/actions/workflows/build.yml/badge.svg
+[build-url]: https://github.com/vendia/vendia-python-tools/actions/workflows/build.yml
+[coverage-image]: https://codecov.io/gh/vendia/vendia-python-tools/branch/main/graph/badge.svg
+[coverage-url]: https://codecov.io/gh/vendia/vendia-python-tools

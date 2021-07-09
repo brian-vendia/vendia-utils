@@ -7,7 +7,6 @@ from typing import Any, List
 
 
 class LazyVisitor(Visitor):
-
     def __init__(self):
         self.branch = {}
         self.trail = []
@@ -74,10 +73,13 @@ class LazyVisitor(Visitor):
     def leave_float_value(self, node, key: str, path, *_args: Any) -> str:
         self._accumulate(_title(path), float(node.value))
 
+
 def _title(path):
     return getattr(getattr(path, "name", None), "value", None)
 
+
 _action_parser = re.compile("^(add|put|delete|update|create)_?(.*)$")
+
 
 def parse_mutations(inputs: List[str]):
     mutation = " ".join(["mutation m {"] + inputs + ["}"])
@@ -88,8 +90,11 @@ def parse_mutations(inputs: List[str]):
     for item in visitor.branch["m"]:
         for operation, arguments in item.items():
             op, user_type = _action_parser.match(operation).groups()
-            new_output.append({"operation": op, "__typename": user_type, "arguments": arguments})
+            new_output.append(
+                {"operation": op, "__typename": user_type, "arguments": arguments}
+            )
     return new_output
+
 
 if __name__ == "__main__":
     sample = [
