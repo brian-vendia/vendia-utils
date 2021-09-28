@@ -5,7 +5,6 @@ name = "pypi"
 
 [packages]
 "vendia-blocks" = {editable = true, path = ".", extras=["testing"]}
-typing = "*"
 
 [dev-packages]
 ptpython = "*"

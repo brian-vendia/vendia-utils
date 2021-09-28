@@ -64,6 +64,6 @@ def test_keys_of_first_item_in_returned_data():
 
 def test_input_dict_of_first_item_in_returned_data():
     data = blocks.parse_mutations(sample_mutations)
-
+    assert data[0]['arguments']['input'] == {'organization_id': '6fe94056-5bd4-11eb-a9fc-0bb70a7f9c77', 'name': 'bangu', 'type': 'dog', 'sex': 'female', 'animal_description': '', 'primary_color': 'Black', 'primary_color_group': 'black', 'additional_colors': [{'name': 'Blue', 'group': 'blue'}], 'additional_color_groups_string': ['blue']}
 
 
