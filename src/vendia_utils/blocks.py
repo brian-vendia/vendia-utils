@@ -89,6 +89,7 @@ def parse_mutations(inputs: List[str]):
     visit(ast, visitor)
     new_output = []
     print(f'DEBUG: visitor.branch {visitor.branch}')
+    print(f'DEBUG: type(visitor.branch) {type(visitor.branch)}')
     for item in visitor.branch["m"]:
         for operation, arguments in item.items():
             op, user_type = _action_parser.match(operation).groups()
