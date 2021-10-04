@@ -86,6 +86,7 @@ def parse_mutations(inputs: List[str]):
     print(f'DEBUG ast {ast}')
     visitor = LazyVisitor()
     print(f'DEBUG: visitor {visitor}')
+    print(f'DEBUG: dir(visitor) {dir(visitor)}')
     visit(ast, visitor)
     new_output = []
     print(f'DEBUG: visitor.branch {visitor.branch}')
