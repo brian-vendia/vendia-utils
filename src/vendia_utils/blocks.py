@@ -89,9 +89,10 @@ def parse_mutations(inputs: List[str]):
     # print(f'DEBUG: dir(visitor) {dir(visitor)}')
     visit(ast, visitor)
     new_output = []
-    # print(f'DEBUG: visitor.branch {visitor.branch}')
-    # print(f'DEBUG: type(visitor.branch) {type(visitor.branch)}')
+    print(f'DEBUG: visitor.branch {visitor.branch}')
+    print(f'DEBUG: type(visitor.branch) {type(visitor.branch)}')
     for item in visitor.branch["m"]:
+        print(f'DEBUG item {item}')
         for operation, arguments in item.items():
             op, user_type = _action_parser.match(operation).groups()
             new_output.append({"operation": op, "__typename": user_type, "arguments": arguments})
