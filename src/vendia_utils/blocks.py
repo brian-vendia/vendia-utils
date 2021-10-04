@@ -80,7 +80,7 @@ def _title(path):
 _action_parser = re.compile("^(add|put|delete|update|create)_?(.*)$")
 
 def parse_mutations(inputs: List[str]):
-    print(f'DEBUG: inputs: {inputs}')
+    print(f'DEBUG: inputs: {inputs}     type: {type(inputs)}')
     outputs = []
     for input in inputs:
         mutation = " ".join("mutation m {" + input + "}")
