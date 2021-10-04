@@ -80,12 +80,12 @@ def _title(path):
 _action_parser = re.compile("^(add|put|delete|update|create)_?(.*)$")
 
 def parse_mutations(inputs: List[str]):
+    print(f'DEBUG: inputs: {inputs}')
     mutation = " ".join(["mutation m {"] + inputs + ["}"])
     ast = graphql.parse(graphql.Source(mutation, "GraphQL request"))
     visitor = LazyVisitor()
     visit(ast, visitor)
     new_output = []
-    print(f'DEBUG: visitor.branch.keys(): {visitor.branch.keys()}')
     for item in visitor.branch["m"]:
         for operation, arguments in item.items():
             op, user_type = _action_parser.match(operation).groups()
