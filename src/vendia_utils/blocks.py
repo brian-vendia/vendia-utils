@@ -81,16 +81,16 @@ _action_parser = re.compile("^(add|put|delete|update|create)_?(.*)$")
 
 def parse_mutations(inputs: List[str]):
     mutation = " ".join(["mutation m {"] + inputs + ["}"])
-    print(f'DEBUG: mutation {mutation}')
+    # print(f'DEBUG: mutation {mutation}')
     ast = graphql.parse(graphql.Source(mutation, "GraphQL request"))
-    print(f'DEBUG ast {ast}')
+    # print(f'DEBUG ast {ast}')
     visitor = LazyVisitor()
-    print(f'DEBUG: visitor {visitor}')
-    print(f'DEBUG: dir(visitor) {dir(visitor)}')
+    # print(f'DEBUG: visitor {visitor}')
+    # print(f'DEBUG: dir(visitor) {dir(visitor)}')
     visit(ast, visitor)
     new_output = []
-    print(f'DEBUG: visitor.branch {visitor.branch}')
-    print(f'DEBUG: type(visitor.branch) {type(visitor.branch)}')
+    # print(f'DEBUG: visitor.branch {visitor.branch}')
+    # print(f'DEBUG: type(visitor.branch) {type(visitor.branch)}')
     for item in visitor.branch["m"]:
         for operation, arguments in item.items():
             op, user_type = _action_parser.match(operation).groups()
