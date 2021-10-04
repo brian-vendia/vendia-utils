@@ -85,6 +85,7 @@ def parse_mutations(inputs: List[str]):
     for input in inputs:
         mutation = " ".join("mutation m {" + input + "}")
         # mutation = " ".join(["mutation m {"] + input + ["}"])
+        print(f'DEBUG: mutation {mutation}')
         ast = graphql.parse(graphql.Source(mutation, "GraphQL request"))
         visitor = LazyVisitor()
         visit(ast, visitor)
