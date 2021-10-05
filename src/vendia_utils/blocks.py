@@ -86,7 +86,7 @@ _action_parser = re.compile("^(add|put|delete|update|create)_?(.*)$")
 def parse_mutations(inputs: List[str]):
     print(f'DEBUG: inputs {inputs} inputs type: {type(inputs)}')
     mutation = " ".join(["mutation m {"] + inputs + ["}"])
-    print(f'DEBUG: mutation type {type(mutation)}')
+    print(f'DEBUG: mutation value {mutation} mutation type {type(mutation)}')
     ast = graphql.parse(graphql.Source(mutation, "GraphQL request"))
     # print(f'DEBUG ast {ast}')
     visitor = LazyVisitor()
