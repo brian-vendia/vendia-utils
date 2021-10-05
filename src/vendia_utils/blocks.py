@@ -3,7 +3,7 @@ import re
 import json
 
 import graphql
-from graphql.language import visitor, Visitor
+from graphql.language import visitor
 from graphql.language.ast import ArgumentNode, OperationDefinitionNode
 from typing import Any, List
 
@@ -54,7 +54,7 @@ class Action(Enum):
         return self in {Action.DELETE, Action.REMOVE}
 
 
-class LazyVisitor(Visitor):
+class LazyVisitor(visitor.Visitor):
     """GraphQL syntax visitor to parse mutations into useful JSON/dicts"""
 
     # create a matcher for the operation+type info
