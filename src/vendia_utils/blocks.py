@@ -130,5 +130,5 @@ if __name__ == "__main__":
         error
     }""",
     ]
-    out = parse_mutations(sample)
+    out = LazyVisitor.parse_mutations(sample)
     print(json.dumps(out, indent=2, sort_keys=True))
