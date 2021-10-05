@@ -1,108 +1,48 @@
 import re
 import json
 
+from actions import Action
 import graphql
-from graphql.language.visitor import Visitor, visit
+from graphql.language import visitor, Visitor
+from graphql.language.ast import ArgumentNode, OperationDefinitionNode
 from typing import Any, List
 
 
 class LazyVisitor(Visitor):
+    """GraphQL syntax visitor to parse mutations into useful JSON/dicts"""
+
+    # create a matcher for the operation+type info
+    _action_parser = re.compile("^(" + "|".join(str(a) for a in Action) + ")(.*)$")
 
     def __init__(self):
-        self.branch = {}
-        self.trail = []
+        self.decoded = {}
 
-    def _accumulate(self, key, value):
-        print(f'DEBUG _accumulate key:{key} value:{value}')
-        if isinstance(self.branch, list):
-            if key is not None:
-                print(f'DEBUG in _accumulate isinstance key:{key}')
-                self.branch.append({key: value})
-                return
-            self.branch.append(value)
-        elif isinstance(self.branch, dict):
-            self.branch[key] = value
+    def enter_operation_definition(self, node: OperationDefinitionNode, *_args):
+        """For all operations, accumulate the query + arguments as python dictionaries"""
+        for selection in node.selection_set.selections:
+            if self.decoded.get(node.name.value):
+                self.decoded[node.name.value][selection.name.value] = self._args_to_dict(selection.arguments)
+            else:
+                self.decoded[node.name.value] = {selection.name.value: self._args_to_dict(selection.arguments)}
+        return visitor.SKIP
 
-    def enter_selection_set(self, node, key, parent, *_args: Any) -> str:
-        print(f'DEBUG enter_selection_set key:{key} parent:{parent}')
-        if type(parent).__name__ == "OperationDefinitionNode":
-            self.trail.append(self.branch)
-            self.branch = []
+    def _args_to_dict(self, args: List[ArgumentNode]):
+        return {arg.name.value: graphql.value_from_ast_untyped(arg.value) for arg in args}
 
-    def leave_selection_set(self, node, key, parent, *_args: Any) -> str:
-        print(f'DEBUG leave_selection_set key:{key} parent:{parent}')
-        if type(parent).__name__ == "OperationDefinitionNode":
-            saved, self.branch = self.branch, self.trail.pop(-1)
-            self._accumulate(_title(parent), saved)
+    @classmethod
+    def parse_mutations(cls, mutations: List[str]):
+        """Convert a list of mutation strings into dictionary types and provide them via an iterator
 
-    def enter_field(self, node, *_args: Any) -> str:
-        if node.name.value == "error":
-            return
-        self.trail.append(self.branch)
-        self.branch = {}
+        This will automatically add a `mutation m` wrapper if one is not already present"""
+        for mut in mutations:
+            mutation = mut if mut.strip().startswith("mutation m") else "mutation m {" + mut + "}"
+            ast = graphql.parse(graphql.Source(mutation, "GraphQL request"))
+            argument_decoder = cls()
+            visitor.visit(ast, argument_decoder)
+            for operation, arguments in argument_decoder.decoded["m"].items():
+                op, user_type = cls._action_parser.match(operation).groups()
+                yield {"__operation": op, "__typename": user_type, "arguments": arguments}
 
-    def leave_field(self, node, *_args: Any) -> str:
-        if node.name.value == "error":
-            return
-        saved, self.branch = self.branch, self.trail.pop(-1)
-        self._accumulate(node.name.value, saved)
-
-    def enter_object_value(self, *_args: Any) -> str:
-        self.trail.append(self.branch)
-        self.branch = {}
-
-    def leave_object_value(self, node, key, parent, *_args: Any) -> str:
-        saved, self.branch = self.branch, self.trail.pop(-1)
-        self._accumulate(_title(parent), saved)
-
-    def enter_list_value(self, *_args: Any) -> str:
-        self.trail.append(self.branch)
-        self.branch = []
-
-    def leave_list_value(self, node, key, parent, *_args: Any) -> str:
-        saved, self.branch = self.branch, self.trail.pop(-1)
-        self._accumulate(parent.name.value, saved)
-
-    def leave_string_value(self, node, key: str, path, *_args: Any) -> str:
-        self._accumulate(_title(path), node.value)
-
-    def leave_boolean_value(self, node, key: str, path, *_args: Any) -> str:
-        self._accumulate(_title(path), bool(node.value))
-
-    def leave_null_value(self, node, key: str, path, *_args: Any) -> str:
-        self._accumulate(_title(path), None)
-
-    def leave_int_value(self, node, key: str, path, *_args: Any) -> str:
-        self._accumulate(_title(path), int(node.value))
-
-    def leave_float_value(self, node, key: str, path, *_args: Any) -> str:
-        self._accumulate(_title(path), float(node.value))
-
-def _title(path):
-    return getattr(getattr(path, "name", None), "value", None)
-
-_action_parser = re.compile("^(add|put|delete|update|create)_?(.*)$")
-
-def parse_mutations(inputs: List[str]):
-    print(f'DEBUG: inputs {inputs} inputs type: {type(inputs)}')
-    mutation = " ".join(["mutation m {"] + inputs + ["}"])
-    print(f'DEBUG: mutation value "{mutation}" mutation type {type(mutation)}')
-    ast = graphql.parse(graphql.Source(mutation, "GraphQL request"))
-    print(f'DEBUG ast {ast}')
-    visitor = LazyVisitor()
-    # print(f'DEBUG: visitor before visit {visitor}')
-    # print(f'DEBUG: dir(visitor) before visit {dir(visitor)}')
-    visit(ast, visitor)
-    new_output = []
-    print(f'DEBUG: visitor after visit {visitor}')
-    print(f'DEBUG: visitor.branch {visitor.branch}')
-    print(f'DEBUG: type(visitor.branch) {type(visitor.branch)}')
-    for item in visitor.branch["m"]:
-        print(f'DEBUG item {item} item type {type(item)}')
-        for operation, arguments in item.items():
-            op, user_type = _action_parser.match(operation).groups()
-            new_output.append({"operation": op, "__typename": user_type, "arguments": arguments})
-    return new_output
 
 if __name__ == "__main__":
     sample = [
