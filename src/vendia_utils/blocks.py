@@ -13,8 +13,10 @@ class LazyVisitor(Visitor):
         self.trail = []
 
     def _accumulate(self, key, value):
+        print(f'DEBUG _accumulate key:{key} value:{value}')
         if isinstance(self.branch, list):
             if key is not None:
+                print(f'DEBUG in _accumulate isinstance key:{key}')
                 self.branch.append({key: value})
                 return
             self.branch.append(value)
@@ -22,11 +24,13 @@ class LazyVisitor(Visitor):
             self.branch[key] = value
 
     def enter_selection_set(self, node, key, parent, *_args: Any) -> str:
+        print(f'DEBUG enter_selection_set key:{key} parent:{parent}')
         if type(parent).__name__ == "OperationDefinitionNode":
             self.trail.append(self.branch)
             self.branch = []
 
     def leave_selection_set(self, node, key, parent, *_args: Any) -> str:
+        print(f'DEBUG leave_selection_set key:{key} parent:{parent}')
         if type(parent).__name__ == "OperationDefinitionNode":
             saved, self.branch = self.branch, self.trail.pop(-1)
             self._accumulate(_title(parent), saved)
