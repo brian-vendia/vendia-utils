@@ -1,11 +1,11 @@
 from enum import Enum
 import re
 import json
+from typing import Any, List
 
 import graphql
 from graphql.language import visitor
 from graphql.language.ast import ArgumentNode, OperationDefinitionNode
-from typing import Any, List
 
 
 class Action(Enum):
@@ -54,7 +54,7 @@ class Action(Enum):
         return self in {Action.DELETE, Action.REMOVE}
 
 
-class LazyVisitor(visitor.Visitor):
+class MutationVisitor(visitor.Visitor):
     """GraphQL syntax visitor to parse mutations into useful JSON/dicts"""
 
     # create a matcher for the operation+type info
@@ -93,42 +93,43 @@ class LazyVisitor(visitor.Visitor):
 if __name__ == "__main__":
     sample = [
         """
-    addAnimal(
-        id:"9cc720d4-623c-11eb-9c41-5391fa973328",
-        input: {
-            organization_id: "6fe94056-5bd4-11eb-a9fc-0bb70a7f9c77" ,
-            name: "bangu" ,
-            type: "dog" ,
-            sex: "female" ,
-            animal_description: "" ,
-            primary_color: "Black" ,
-            primary_color_group: "black" ,
-            additional_colors: [{name: "Blue" , group: "blue" }] ,
-            additional_color_groups_string: ["blue"]
-        }
-    ) {
-        error
-    }""",
+        addAnimal(
+            id:"9cc720d4-623c-11eb-9c41-5391fa973328",
+            input: {
+                organization_id: "6fe94056-5bd4-11eb-a9fc-0bb70a7f9c77" ,
+                name: "bangu" ,
+                type: "dog" ,
+                sex: "female" ,
+                animal_description: "" ,
+                primary_color: "Black" ,
+                primary_color_group: "black" ,
+                additional_colors: [{name: "Blue" , group: "blue" }] ,
+                additional_color_groups_string: ["blue"]
+            }
+        ) {
+            error
+        }""",
         """
-    addEvent(
-        id: "b4de7525-623b-11eb-a0cb-0db0d645b658"
-        input: {
-            animal_id: "b434d448-623b-11eb-afea-59074c0526d3",
-            organization_id: "6fe94056-5bd4-11eb-a9fc-0bb70a7f9c77",
-            timestamp: 1611929411261,
-            node_created: "Node-2",
-            type: "intake",
-            nested: {thing: ["intake"]},
-            sub_type: "Stray/OTC",
-            location_description: "",
-            three_legged: false,
-            tentacles: null,
-            address1: "",
-            address2: "",
-            city: "", state: "", zipcode: "", geo_location: [0.0, 1.0]}
-    ) {
-        error
-    }""",
+        addEvent(
+            id: "b4de7525-623b-11eb-a0cb-0db0d645b658"
+            input: {
+                animal_id: "b434d448-623b-11eb-afea-59074c0526d3",
+                organization_id: "6fe94056-5bd4-11eb-a9fc-0bb70a7f9c77",
+                timestamp: 1611929411261,
+                node_created: "Node-2",
+                type: "intake",
+                nested: {thing: ["intake"]},
+                sub_type: "Stray/OTC",
+                location_description: "",
+                three_legged: false,
+                tentacles: null,
+                address1: "",
+                address2: "",
+                city: "", state: "", zipcode: "", geo_location: [0.0, 1.0]}
+        ) {
+            error
+        }
+        """,
     ]
-    out = LazyVisitor.parse_mutations(sample)
+    out = MutationVisitor.parse_mutations(sample)
     print(json.dumps(out, indent=2, sort_keys=True))

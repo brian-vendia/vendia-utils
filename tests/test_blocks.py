@@ -1,8 +1,7 @@
-import pytest
-from vendia_utils.blocks import LazyVisitor
+from vendia_utils.blocks import MutationVisitor
 
 sample_mutations = [
-        """
+    """
     addAnimal(
         id:"9cc720d4-623c-11eb-9c41-5391fa973328",
         input: {
@@ -19,7 +18,7 @@ sample_mutations = [
     ) {
         error
     }""",
-        """
+    """
     addEvent(
         id: "b4de7525-623b-11eb-a0cb-0db0d645b658"
         input: {
@@ -43,27 +42,27 @@ sample_mutations = [
 
 def test_type_of_returned_data():
     # Ensure parse_mutations returns a list
-    data = list(LazyVisitor.parse_mutations(sample_mutations))
+    data = list(MutationVisitor.parse_mutations(sample_mutations))
     assert type(data) is list
 
 def test_quantity_of_items_in_returned_data():
     # Ensure data contains two objects
-    data = list(LazyVisitor.parse_mutations(sample_mutations))
+    data = list(MutationVisitor.parse_mutations(sample_mutations))
     assert len(data) == 2
 
 def test_types_of_items_in_returned_data():
     # Make sure objects in the list are dicts
-    data = LazyVisitor.parse_mutations(sample_mutations)
+    data = MutationVisitor.parse_mutations(sample_mutations)
     for m in data:
         assert type(m) is dict
 
 def test_keys_of_first_item_in_returned_data():
     # Make sure keys of the first item are set
-    data = list(LazyVisitor.parse_mutations(sample_mutations))
+    data = list(MutationVisitor.parse_mutations(sample_mutations))
     assert list(data[0].keys()) == ['__operation', '__typename', 'arguments']
 
 def test_input_dict_of_first_item_in_returned_data():
-    data = list(LazyVisitor.parse_mutations(sample_mutations))
+    data = list(MutationVisitor.parse_mutations(sample_mutations))
     assert data[0]['arguments']['input'] == {'organization_id': '6fe94056-5bd4-11eb-a9fc-0bb70a7f9c77', 'name': 'bangu', 'type': 'dog', 'sex': 'female', 'animal_description': '', 'primary_color': 'Black', 'primary_color_group': 'black', 'additional_colors': [{'name': 'Blue', 'group': 'blue'}], 'additional_color_groups_string': ['blue']}
 
 
