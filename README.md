@@ -39,7 +39,7 @@ The `vendia-utils` module makes it easier to query block data and turn it into s
 #### Input
 
 ```bash
-data = list(LazyVisitor.parse_mutations(['addComponentDemand(id:"017c5074-f6a3-2814-7e20-f08d6e5f47fb",input: {assembledComponentId: "123", assembledComponentName: "thing", ford6MonthDemandForecast: 35, ford6WeekDemandForecast: 30, recordDate: "2021-10-04"}){error}']))
+data = list(MutationVisitor.parse_mutations(['addComponentDemand(id:"017c5074-f6a3-2814-7e20-f08d6e5f47fb",input: {assembledComponentId: "123", assembledComponentName: "thing", ford6MonthDemandForecast: 35, ford6WeekDemandForecast: 30, recordDate: "2021-10-04"}){error}']))
 ```
 
 #### Output
